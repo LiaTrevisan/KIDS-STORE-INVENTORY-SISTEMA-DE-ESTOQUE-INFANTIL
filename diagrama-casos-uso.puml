@@ -1,0 +1,104 @@
+@startuml Diagrama de Casos de Uso - Kids Store Inventory
+
+' Definição dos atores
+actor "Funcionário" as Func
+actor "Gerente" as Ger
+
+' Herança de atores
+Ger --|> Func
+
+' Sistema
+rectangle "Kids Store Inventory" {
+
+  ' Casos de uso relacionados a Produtos
+  package "Gestão de Produtos" {
+    usecase "Cadastrar Produto Infantil" as UC1
+    usecase "Visualizar Produtos" as UC2
+    usecase "Alterar Produto" as UC3
+    usecase "Excluir Produto" as UC4
+    usecase "Filtrar por Categoria" as UC5
+    usecase "Filtrar por Faixa Etária" as UC6
+  }
+
+  ' Casos de uso relacionados a Estoque
+  package "Gestão de Estoque" {
+    usecase "Adicionar ao Estoque" as UC7
+    usecase "Visualizar Estoque" as UC8
+    usecase "Verificar Estoque Baixo" as UC9
+    usecase "Atualizar Quantidade" as UC10
+  }
+
+  ' Casos de uso relacionados a Fornecedores
+  package "Gestão de Fornecedores" {
+    usecase "Cadastrar Fornecedor" as UC11
+    usecase "Visualizar Fornecedores" as UC12
+    usecase "Alterar Fornecedor" as UC13
+    usecase "Excluir Fornecedor" as UC14
+  }
+
+  ' Casos de uso relacionados a Funcionários
+  package "Gestão de Funcionários" {
+    usecase "Cadastrar Funcionário" as UC15
+    usecase "Visualizar Funcionários" as UC16
+    usecase "Excluir Funcionário" as UC17
+  }
+
+  ' Casos de uso gerais
+  package "Sistema" {
+    usecase "Fazer Login" as UC18
+    usecase "Visualizar Perfil" as UC19
+    usecase "Atualizar Dados Pessoais" as UC20
+    usecase "Fazer Logout" as UC21
+  }
+}
+
+' Relacionamentos - Funcionário
+Func --> UC1
+Func --> UC2
+Func --> UC3
+Func --> UC5
+Func --> UC6
+Func --> UC7
+Func --> UC8
+Func --> UC9
+Func --> UC10
+Func --> UC11
+Func --> UC12
+Func --> UC13
+Func --> UC18
+Func --> UC19
+Func --> UC20
+Func --> UC21
+
+' Relacionamentos - Gerente (além dos que herda de Funcionário)
+Ger --> UC4
+Ger --> UC14
+Ger --> UC15
+Ger --> UC16
+Ger --> UC17
+
+' Relacionamentos de inclusão e extensão
+UC1 .> UC7 : <<include>>
+UC5 .> UC2 : <<extend>>
+UC6 .> UC2 : <<extend>>
+UC9 .> UC8 : <<extend>>
+
+' Notas explicativas
+note right of UC1
+  Cadastra brinquedos ou livros
+  com categoria e faixa etária
+end note
+
+note right of UC9
+  Alerta quando o estoque está
+  abaixo do mínimo configurado
+end note
+
+note bottom of Ger
+  Gerente possui todas as
+  permissões de Funcionário
+  mais permissões administrativas
+end note
+
+@enduml
+

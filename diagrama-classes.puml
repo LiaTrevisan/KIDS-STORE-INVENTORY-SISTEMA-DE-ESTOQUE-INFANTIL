@@ -1,0 +1,342 @@
+@startuml Diagrama de Classes - Kids Store Inventory
+
+' Configurações de estilo
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #FEFEFE
+skinparam class {
+    BackgroundColor #E8F5E9
+    BorderColor #4CAF50
+    ArrowColor #4CAF50
+}
+
+' ==================== MODEL ====================
+
+package "Model" #DDFFDD {
+
+  class Usuario {
+    - id: int
+    - nome: String
+    - email: String
+    - senha: String
+    - cargo: String
+    + Usuario(nome, email, senha, cargo)
+    + Usuario(id, nome, email, senha, cargo)
+    + getId(): int
+    + setId(id: int): void
+    + getNome(): String
+    + setNome(nome: String): void
+    + getEmail(): String
+    + setEmail(email: String): void
+    + getSenha(): String
+    + setSenha(senha: String): void
+    + getCargo(): String
+    + setCargo(cargo: String): void
+  }
+
+  class Funcionario {
+    - idFunc: int
+    + Funcionario(id, nome, email, senha, cargo, idFunc)
+    + getIdFunc(): int
+    + setIdFunc(idFunc: int): void
+  }
+
+  class Gerente {
+    + Gerente(id, nome, email, senha, cargo, idFunc)
+    + Gerente(id, idFunc)
+  }
+
+  class Produto {
+    - id: int
+    - nome: String
+    - preco: double
+    - categoria: String
+    - faixaEtaria: String
+    - descricao: String
+    - estoqueMinimo: int
+    + Produto(nome, preco, categoria, faixaEtaria, descricao, estoqueMinimo)
+    + Produto(nome, preco)
+    + getId(): int
+    + setId(id: int): void
+    + getNome(): String
+    + setNome(nome: String): void
+    + getPreco(): double
+    + setPreco(preco: double): void
+    + getCategoria(): String
+    + setCategoria(categoria: String): void
+    + getFaixaEtaria(): String
+    + setFaixaEtaria(faixaEtaria: String): void
+    + getDescricao(): String
+    + setDescricao(descricao: String): void
+    + getEstoqueMinimo(): int
+    + setEstoqueMinimo(estoqueMinimo: int): void
+  }
+
+  class Fornecedor {
+    - id: int
+    - nome: String
+    + Fornecedor()
+    + Fornecedor(id, nome)
+    + getId(): int
+    + setId(id: int): void
+    + getNome(): String
+    + setNome(nome: String): void
+  }
+
+  class Estoque {
+    - id: int
+    - qtdProdutos: int
+    - produtos: List<Produto>
+    + Estoque()
+    + getId(): int
+    + setId(id: int): void
+    + getQtdProdutos(): int
+    + setQtdProdutos(qtdProdutos: int): void
+    + adicionarProduto(produto: Produto): void
+    + excluirProduto(produto: Produto): void
+    + getProdutos(): List<Produto>
+    + setProdutos(produtos: List<Produto>): void
+  }
+
+  ' Relacionamentos do Model
+  Funcionario --|> Usuario : herda
+  Gerente --|> Funcionario : herda
+  Estoque "1" o-- "*" Produto : contém
+  Fornecedor "1" -- "*" Produto : fornece
+}
+
+' ==================== CONTROL ====================
+
+package "Control" #FFE0B2 {
+
+  class ConexaoBD <<SRP>> {
+    - {static} URL: String
+    - {static} USER: String
+    - {static} PASSWORD: String
+    - {static} DRIVER: String
+    + {static} getConexao(): Connection
+    + {static} fecharConexao(conn: Connection): void
+  }
+
+  class ProdutoDAO {
+    + inserirProduto(produto: Produto): void
+    + atualizarProduto(produto: Produto): void
+    + deletarProduto(id: int): void
+    + buscarProdutoPorId(id: int): Produto
+    + buscarTodosProdutos(): List<Produto>
+    + buscarProdutosPorNome(nome: String): List<Produto>
+    + buscarProdutosPorCategoria(categoria: String): List<Produto>
+    + buscarProdutosPorFaixaEtaria(faixaEtaria: String): List<Produto>
+  }
+
+  class FornecedorDAO {
+    + inserirFornecedor(fornecedor: Fornecedor): void
+    + atualizarFornecedor(fornecedor: Fornecedor): void
+    + deletarFornecedor(id: int): void
+    + buscarFornecedorPorId(id: int): Fornecedor
+    + listarTodosFornecedores(): List<Fornecedor>
+  }
+
+  class UsuarioDAO {
+    + inserirUsuario(usuario: Usuario): void
+    + atualizarUsuario(usuario: Usuario): void
+    + deletarUsuario(id: int): void
+    + buscarUsuarioPorId(id: int): Usuario
+    + buscarUsuarioPorEmail(email: String): Usuario
+    + buscarUsuarioPorSenha(senha: String): Usuario
+    + listarTodosUsuarios(): List<Usuario>
+  }
+
+  class FuncionarioDAO {
+    + inserirFuncionario(funcionario: Funcionario): void
+    + atualizarFuncionario(funcionario: Funcionario): void
+    + deletarFuncionario(id: int): void
+    + buscarFuncionarioPorId(id: int): Funcionario
+  }
+
+  class GerenteDAO {
+    + inserirGerente(gerente: Gerente): void
+    + atualizarGerente(gerente: Gerente): void
+    + deletarGerente(id: int): void
+    + buscarGerentePorId(id: int): Gerente
+  }
+
+  class EstoqueDAO {
+    + inserirEstoque(estoque: Estoque): void
+    + atualizarEstoque(estoque: Estoque): void
+    + deletarEstoque(id: int): void
+    + buscarEstoquePorId(id: int): Estoque
+  }
+
+  class UsuarioController {
+    - usuario: Usuario
+    + UsuarioController(usuario: Usuario)
+    + atualizarNome(nome: String): void
+    + atualizarEmail(email: String): void
+    + atualizarSenha(senha: String): void
+  }
+
+  class EstoqueController {
+    - estoque: Estoque
+    + EstoqueController(estoque: Estoque)
+    + adicionarProduto(produto: Produto): void
+    + excluirProduto(produto: Produto): void
+    + visualizarProdutos(): List<Produto>
+  }
+
+  ' Relacionamentos Control
+  ProdutoDAO ..> ConexaoBD : usa
+  FornecedorDAO ..> ConexaoBD : usa
+  UsuarioDAO ..> ConexaoBD : usa
+  FuncionarioDAO ..> ConexaoBD : usa
+  GerenteDAO ..> ConexaoBD : usa
+  EstoqueDAO ..> ConexaoBD : usa
+
+  ProdutoDAO ..> Produto : manipula
+  FornecedorDAO ..> Fornecedor : manipula
+  UsuarioDAO ..> Usuario : manipula
+  FuncionarioDAO ..> Funcionario : manipula
+  GerenteDAO ..> Gerente : manipula
+  EstoqueDAO ..> Estoque : manipula
+
+  UsuarioController --> Usuario : controla
+  EstoqueController --> Estoque : controla
+}
+
+' ==================== VIEW ====================
+
+package "View" #BBDEFB {
+
+  class TelaLogin {
+    - btnLogin: JButton
+    - tfSenha: JTextField
+    - tfLogin: JTextField
+    + TelaLogin()
+    - btnLoginActionPerformed(evt): void
+  }
+
+  class telaInicial {
+    - btnPerfil: JButton
+    - btnEstoque: JButton
+    - btnFunc: JButton
+    - btnForn: JButton
+    - btnSair: JButton
+    - usuarioLogado: Usuario
+    + telaInicial()
+    + setUsuarioLogado(usuario: Usuario): void
+  }
+
+  class CadProduto {
+    - tfNome: JTextField
+    - tfPreco: JTextField
+    - btnCad: JButton
+    - btnVoltar: JButton
+    - produtoDAO: ProdutoDAO
+    + CadProduto()
+    - btnCadActionPerformed(evt): void
+  }
+
+  class CadFornecedor {
+    - tfNome: JTextField
+    - btnCad: JButton
+    - btnVoltar: JButton
+    + CadFornecedor()
+    - cadastrarFornecedor(): void
+  }
+
+  class CadFuncionario {
+    - tfNome: JTextField
+    - tfEmail: JTextField
+    - tfSenha: JTextField
+    - tfCargo: JTextField
+    - btnCad: JButton
+    + CadFuncionario()
+  }
+
+  class Estoque {
+    - tbProds: JTable
+    - btnAddProd: JButton
+    - btnExcProd: JButton
+    - btnVoltar: JButton
+    + Estoque()
+    - carregarDadosTabela(): void
+  }
+
+  class Fornecedores {
+    - jTable1: JTable
+    - btnCadForn: JButton
+    - btnExcForn: JButton
+    - btnVoltar: JButton
+    + Fornecedores()
+    - carregarDadosTabela(): void
+  }
+
+  class Funcionario {
+    - jTable2: JTable
+    - btnCadFunc: JButton
+    - btnExcFunc: JButton
+    - btnVoltar: JButton
+    + Funcionario()
+    - carregarDadosTabela(): void
+  }
+
+  class Perfil {
+    - lNome: JLabel
+    - lEmail: JLabel
+    - lCargo: JLabel
+    - btnEdit: JButton
+    - btnVoltar: JButton
+    + Perfil()
+  }
+
+  class AlteraDados {
+    - tfNome: JTextField
+    - tfEmail: JTextField
+    - tfSenha: JTextField
+    - btnEdit: JButton
+    - btnVoltar: JButton
+    + AlteraDados()
+  }
+
+  ' Relacionamentos View
+  TelaLogin ..> UsuarioDAO : usa
+  CadProduto --> ProdutoDAO : usa
+  CadFornecedor ..> FornecedorDAO : usa
+  CadFuncionario ..> UsuarioDAO : usa
+  Estoque ..> ProdutoDAO : usa
+  Fornecedores ..> FornecedorDAO : usa
+  Funcionario ..> UsuarioDAO : usa
+  Perfil --> Usuario : exibe
+  AlteraDados ..> UsuarioController : usa
+}
+
+' Relacionamentos entre camadas
+TelaLogin ..> telaInicial : navega
+telaInicial ..> Estoque : navega
+telaInicial ..> Fornecedores : navega
+telaInicial ..> Funcionario : navega
+telaInicial ..> Perfil : navega
+
+' Notas explicativas
+note top of ConexaoBD
+  Princípio SRP:
+  Responsabilidade única de
+  gerenciar conexões com BD
+end note
+
+note right of Produto
+  Produtos infantis com:
+  - Categoria (Brinquedo/Livro)
+  - Faixa etária recomendada
+  - Descrição detalhada
+  - Estoque mínimo
+end note
+
+note bottom of Gerente
+  Princípio LSP:
+  Gerente pode substituir
+  Funcionario sem quebrar
+  o sistema
+end note
+
+@enduml
+
